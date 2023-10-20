@@ -26,7 +26,7 @@ class InvestingRoutine:
         elif isinstance(self.created_object, CharityProject):
             return DonationCRUD(Donation)
 
-    async def __call__(self) -> Union[CharityProject, Donation]:
+    async def dictribute_money(self) -> Union[CharityProject, Donation]:
         crud = self.__get_crud_for_related()
         objects_to_change = await crud.get_not_invested_instances(self.session)
         for changing_object in objects_to_change:

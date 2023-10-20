@@ -7,7 +7,7 @@ from app.schemas.mixins import CharityDbMixin
 
 
 class DonationBase(BaseModel):
-    full_amount: int = Field(..., gt=0)
+    full_amount: int = Field(gt=0)
     comment: Optional[str]
     create_date: datetime = Field(default_factory=datetime.now)
 

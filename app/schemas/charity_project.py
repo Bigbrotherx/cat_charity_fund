@@ -17,9 +17,9 @@ class CharityProjectUpdate(BaseModel):
 
 
 class CharityProjectCreate(BaseModel):
-    full_amount: int = Field(..., gt=0)
-    name: str = Field(..., min_length=1, max_length=100)
-    description: str = Field(..., min_length=1)
+    full_amount: int = Field(gt=0)
+    name: str = Field(min_length=1, max_length=100)
+    description: str = Field(min_length=1)
     create_date: datetime = Field(default_factory=datetime.now)
 
 

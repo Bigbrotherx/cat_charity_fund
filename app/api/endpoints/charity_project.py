@@ -1,21 +1,14 @@
 from fastapi import APIRouter, Depends
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_async_session
 from app.core.user import current_superuser
-from app.crud import charity_project_crud
-from app.api.validators import (
-    check_project_before_delete,
-    check_project_before_update,
-    check_project_name_duplicate,
-)
 from app.schemas.charity_project import (
     CharityProjectDB,
     CharityProjectCreate,
     CharityProjectUpdate,
 )
-from app.services.investing import InvestingRoutine
+from app.services.charity_project import CharityProjectHandler
 
 router = APIRouter()
 
@@ -31,7 +24,8 @@ async def get_all_charity_projects(
     """
     Возвращает список всех проектов.
     """
-    all_projects = await charity_project_crud.get_multi(session)
+    project_handler = CharityProjectHandler(session)
+    all_projects = await project_handler.get_all_charity_projects()
     return all_projects
 
 
@@ -52,12 +46,8 @@ async def create_charity_project(
     Только для суперюзеров.
     Создаёт благотворительный проект.
     """
-    await check_project_name_duplicate(charity_project.name, session)
-    new_charity_project = await charity_project_crud.create(
-        charity_project, session
-    )
-    investing_routine = InvestingRoutine(new_charity_project, session)
-    new_charity_project = await investing_routine()
+    project_handler = CharityProjectHandler(session)
+    new_charity_project = await project_handler.create_charity_project(charity_project)
     return new_charity_project
 
 
@@ -79,10 +69,8 @@ async def delete_charity_project(
     Нельзя удалить проект, в который уже были инвестированы средства,
     его можно только закрыть.
     """
-    charity_project = await check_project_before_delete(project_id, session)
-    charity_project = await charity_project_crud.remove(
-        charity_project, session
-    )
+    project_handler = CharityProjectHandler(session)
+    charity_project = await project_handler.delete_charity_project(project_id)
     return charity_project
 
 
@@ -103,12 +91,6 @@ async def update_charity_project(
     Закрытый проект нельзя редактировать;
     нельзя установить требуемую сумму меньше уже вложенной.
     """
-    charity_project = await check_project_before_update(
-        project_id, session, obj_in
-    )
-    charity_project = await charity_project_crud.update(
-        charity_project, obj_in, session
-    )
-    investing_routine = InvestingRoutine(charity_project, session)
-    charity_project = await investing_routine()
+    project_handler = CharityProjectHandler(session)
+    charity_project = await project_handler.update_charity_project(project_id, obj_in)
     return charity_project
