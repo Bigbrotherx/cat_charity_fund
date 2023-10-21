@@ -53,8 +53,7 @@ class InvestingRoutine:
                     self.created_object.full_amount
                 )
                 if (
-                    changing_object.full_amount
-                    == changing_object.invested_amount
+                    changing_object.full_amount == changing_object.invested_amount
                 ):
                     changing_object = self.__close_object(changing_object)
                     self.session.add(changing_object)
