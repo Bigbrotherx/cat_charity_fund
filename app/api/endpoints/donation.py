@@ -26,7 +26,7 @@ async def get_all_donations(
     Возвращает список всех пожертвований.
     """
     donation_handler = DonationHandler(session)
-    all_donations = await donation_handler.get_all_donations()
+    all_donations = await donation_handler.get_all_objects_from_db()
     return all_donations
 
 
@@ -58,5 +58,5 @@ async def create_donation(
     Сделать пожертвование
     """
     donation_handler = DonationHandler(session, user)
-    new_donation = await donation_handler.create_donation(donation)
+    new_donation = await donation_handler.create_object(donation)
     return new_donation

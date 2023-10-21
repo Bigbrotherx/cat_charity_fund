@@ -25,7 +25,7 @@ async def get_all_charity_projects(
     Возвращает список всех проектов.
     """
     project_handler = CharityProjectHandler(session)
-    all_projects = await project_handler.get_all_charity_projects()
+    all_projects = await project_handler.get_all_objects_from_db()
     return all_projects
 
 

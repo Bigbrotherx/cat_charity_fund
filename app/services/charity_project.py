@@ -1,8 +1,6 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.models import User, CharityProject
+from app.models import CharityProject
 from app.crud import charity_project_crud
-from app.api.validators import (
+from app.crud.validators import (
     check_project_name_duplicate,
     check_project_before_delete,
     check_project_before_update,
@@ -12,33 +10,25 @@ from app.schemas.charity_project import (
     CharityProjectUpdate,
 )
 from app.services.investing import InvestingRoutine
+from app.services.base_handler import BaseHandler
 
 
-class CharityProjectHandler:
-    def __init__(self, session: AsyncSession, user: User = None) -> None:
-        self.session = session
-        self.user = user
+class CharityProjectHandler(BaseHandler):
 
-    async def get_all_charity_projects(self) -> list[CharityProject]:
-        all_projects = await charity_project_crud.get_multi(self.session)
-        return all_projects
+    CRUD = charity_project_crud
 
     async def create_charity_project(
         self, charity_project: CharityProjectCreate
     ) -> CharityProject:
         await check_project_name_duplicate(charity_project.name, self.session)
-        new_charity_project = await charity_project_crud.create(
-            charity_project, self.session
-        )
-        investing_routine = InvestingRoutine(new_charity_project, self.session)
-        new_charity_project = await investing_routine.dictribute_money()
+        new_charity_project = await super().create_object(charity_project)
         return new_charity_project
 
     async def delete_charity_project(self, project_id: int) -> CharityProject:
         charity_project = await check_project_before_delete(
             project_id, self.session
         )
-        charity_project = await charity_project_crud.remove(
+        charity_project = await self.CRUD.remove(
             charity_project, self.session
         )
         return charity_project
@@ -49,7 +39,7 @@ class CharityProjectHandler:
         charity_project = await check_project_before_update(
             project_id, self.session, project
         )
-        charity_project = await charity_project_crud.update(
+        charity_project = await self.CRUD.update(
             charity_project, project, self.session
         )
         investing_routine = InvestingRoutine(charity_project, self.session)
