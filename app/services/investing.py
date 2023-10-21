@@ -10,17 +10,26 @@ from app.crud.donation import DonationCRUD
 
 class InvestingRoutine:
     """Класс распределения инвестиций"""
-    def __init__(self, created_object: Union[CharityProject, Donation], session: AsyncSession) -> None:
+
+    def __init__(
+        self,
+        created_object: Union[CharityProject, Donation],
+        session: AsyncSession,
+    ) -> None:
         self.created_object = created_object
         self.session = session
 
-    def __close_object(self, obj: Union[CharityProject, Donation]) -> Union[CharityProject, Donation]:
+    def __close_object(
+        self, obj: Union[CharityProject, Donation]
+    ) -> Union[CharityProject, Donation]:
         obj.fully_invested = True
         obj.close_date = datetime.now()
         obj.invested_amount = obj.full_amount
         return obj
 
-    def __get_crud_for_related(self) -> Union[CharityProjectCRUD, DonationCRUD]:
+    def __get_crud_for_related(
+        self,
+    ) -> Union[CharityProjectCRUD, DonationCRUD]:
         if isinstance(self.created_object, Donation):
             return CharityProjectCRUD(CharityProject)
         elif isinstance(self.created_object, CharityProject):
@@ -34,12 +43,19 @@ class InvestingRoutine:
                 changing_object.full_amount - changing_object.invested_amount
             )
             if self.created_object.full_amount > changing_object_free_amount:
-                self.created_object.invested_amount += changing_object_free_amount
+                self.created_object.invested_amount += (
+                    changing_object_free_amount
+                )
                 changing_object = self.__close_object(changing_object)
                 self.session.add(changing_object)
             else:
-                changing_object.invested_amount += self.created_object.full_amount
-                if changing_object.full_amount == changing_object.invested_amount:
+                changing_object.invested_amount += (
+                    self.created_object.full_amount
+                )
+                if (
+                    changing_object.full_amount
+                    == changing_object.invested_amount
+                ):
                     changing_object = self.__close_object(changing_object)
                     self.session.add(changing_object)
                 self.created_object = self.__close_object(self.created_object)

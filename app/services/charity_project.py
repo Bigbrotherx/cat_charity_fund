@@ -14,7 +14,6 @@ from app.services.base_handler import BaseHandler
 
 
 class CharityProjectHandler(BaseHandler):
-
     CRUD = charity_project_crud
 
     async def create_charity_project(
@@ -28,9 +27,7 @@ class CharityProjectHandler(BaseHandler):
         charity_project = await check_project_before_delete(
             project_id, self.session
         )
-        charity_project = await self.CRUD.remove(
-            charity_project, self.session
-        )
+        charity_project = await self.CRUD.remove(charity_project, self.session)
         return charity_project
 
     async def update_charity_project(

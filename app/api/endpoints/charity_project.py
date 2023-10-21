@@ -47,7 +47,9 @@ async def create_charity_project(
     Создаёт благотворительный проект.
     """
     project_handler = CharityProjectHandler(session)
-    new_charity_project = await project_handler.create_charity_project(charity_project)
+    new_charity_project = await project_handler.create_charity_project(
+        charity_project
+    )
     return new_charity_project
 
 
@@ -92,5 +94,7 @@ async def update_charity_project(
     нельзя установить требуемую сумму меньше уже вложенной.
     """
     project_handler = CharityProjectHandler(session)
-    charity_project = await project_handler.update_charity_project(project_id, obj_in)
+    charity_project = await project_handler.update_charity_project(
+        project_id, obj_in
+    )
     return charity_project

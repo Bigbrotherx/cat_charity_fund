@@ -63,9 +63,7 @@ class CRUDBase:
         await session.commit()
         return db_obj
 
-    async def get_not_invested_instances(
-        self, session: AsyncSession
-    ):
+    async def get_not_invested_instances(self, session: AsyncSession):
         """Получить все незакрытые объекты"""
         objects = await session.execute(
             select(self.model)

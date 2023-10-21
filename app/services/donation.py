@@ -4,7 +4,6 @@ from app.services.base_handler import BaseHandler
 
 
 class DonationHandler(BaseHandler):
-
     CRUD = donation_crud
 
     async def get_user_donations(self) -> list[Donation]:
